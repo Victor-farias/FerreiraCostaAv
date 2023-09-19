@@ -9,6 +9,10 @@ namespace FerreiraCostaAv.Models
 {
   public class User : IUser
   {
+    public User()
+    {
+    }
+
     public User(Credential credencials, string email, string phoneNumber, int cpf, DateTime birthDate, string mothersName, StatusEnum status, DateTime inclusionDate, DateTime changeDate)
     {
       Credencials = credencials;

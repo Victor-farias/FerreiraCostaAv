@@ -9,6 +9,10 @@ namespace FerreiraCostaAv.Models
   public class Credential : ICredential
 
   {
+    public Credential()
+    {
+    }
+
     public Credential(string login, string password)
     {
       Login = login;
