@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FerreiraCostaAv.Interfaces
 {
-  public interface ICredentials
+  public interface ICredential
   {
   }
 }

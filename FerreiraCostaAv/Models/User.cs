@@ -9,7 +9,7 @@ namespace FerreiraCostaAv.Models
 {
   public class User : IUser
   {
-    public User(Credencials credencials, string email, string phoneNumber, int cpf, DateTime birthDate, string mothersName, StatusEnum status, DateTime inclusionDate, DateTime changeDate)
+    public User(Credential credencials, string email, string phoneNumber, int cpf, DateTime birthDate, string mothersName, StatusEnum status, DateTime inclusionDate, DateTime changeDate)
     {
       Credencials = credencials;
       Email = email;
@@ -23,7 +23,7 @@ namespace FerreiraCostaAv.Models
     }
 
     public int Id { get; set; }
-    public Credencials  Credencials { get; set; }
+    public Credential  Credencials { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
     public int Cpf { get; set; }

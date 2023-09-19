@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace FerreiraCostaAv.Models
 {
-  public class Credencials : ICredentials
+  public class Credential : ICredential
 
   {
-    public Credencials(string login, string password)
+    public Credential(string login, string password)
     {
       Login = login;
       Password = password;
