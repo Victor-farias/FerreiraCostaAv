@@ -14,7 +14,7 @@ namespace FerreiraCostaAv.Services
   {
     private static ApplicationDbContext dbContext;
 
-    private static void NewUser(UserDTO userDTO)
+    public static void NewUser(UserDTO userDTO)
     {
       dbContext.Add(
         new User(
@@ -32,7 +32,7 @@ namespace FerreiraCostaAv.Services
       dbContext.SaveChanges();
     }
 
-    private static void EditUser(UserDTO userDTO)
+    public static void EditUser(UserDTO userDTO)
     {
       var user = dbContext.Users.Include(i => i.Credential).First(w => w.Id == userDTO.Id);
 
@@ -50,7 +50,7 @@ namespace FerreiraCostaAv.Services
       dbContext.SaveChanges();
     }
 
-    private static void DeleteUsers(List<UserDTO> usersDTO)
+    public static void DeleteUsers(List<UserDTO> usersDTO)
     {
       var userIds = usersDTO.Select(s => s.Id);
       var usersToDelete = dbContext.Users.Where(w => userIds.Contains(w.Id));
@@ -59,7 +59,7 @@ namespace FerreiraCostaAv.Services
       dbContext.SaveChanges();
     }
 
-    private static List<User> GetUsers()
+    public static List<User> GetUsers()
     {
       return dbContext.Users.ToList();
     }

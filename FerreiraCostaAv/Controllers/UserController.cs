@@ -24,7 +24,15 @@ namespace FerreiraCostaAv.Controllers
     [HttpPost]
     public IActionResult Login()
     {
-      return Ok();
+      try
+      {
+        //UserService.NewUser(user);
+        return Ok();
+      }
+      catch (Exception e)
+      {
+        return BadRequest(e.Message);
+      }
     }
 
     [HttpGet]
@@ -34,28 +42,59 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpPost]
-    public IActionResult NewUser([FromBody] UserDTO user)
+    public IActionResult NewUser([FromBody] UserDTO userDTO)
     {
 
-      return Ok();
+      try
+      {
+        UserService.NewUser(userDTO);
+        return Ok("New user added successfully");
+      }
+      catch (Exception e)
+      {
+        return BadRequest(e.Message);
+      }
     }
 
     [HttpGet]
     public IActionResult GetUsers()
     {
-      return Ok();
+      try
+      {
+        return Ok(UserService.GetUsers());
+      }
+      catch (Exception e)
+      {
+        return BadRequest(e.Message);
+      }
     }
 
     [HttpPut]
-    public IActionResult Edituser()
+    public IActionResult Edituser([FromBody] UserDTO userDTO)
     {
-      return Ok();
+      try
+      {
+        UserService.EditUser(userDTO);
+        return Ok("User edited successfully.");
+      }
+      catch (Exception e)
+      {
+        return BadRequest(e.Message);
+      }
     }
 
     [HttpDelete]
-    public IActionResult DeleteUser()
+    public IActionResult DeleteUser([FromBody] List<UserDTO> usersDTO)
     {
-      return Ok();
+      try
+      {
+        UserService.DeleteUsers(usersDTO);
+        return Ok("Users deleted successfully.");
+      }
+      catch (Exception e)
+      {
+        return BadRequest(e.Message);
+      }
     }
   }
 }
