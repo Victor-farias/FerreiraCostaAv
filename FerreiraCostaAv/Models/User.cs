@@ -15,9 +15,9 @@ namespace FerreiraCostaAv.Models
     {
     }
 
-    public User(Credential credencials, string email, string phoneNumber, int cpf, DateTime birthDate, string mothersName, StatusEnum status, DateTime inclusionDate, DateTime changeDate)
+    public User(Credential credential, string email, string phoneNumber, int cpf, DateTime birthDate, string mothersName, StatusEnum status, DateTime inclusionDate, DateTime? changeDate)
     {
-      Credencials = credencials;
+      Credential = credential;
       Email = email;
       PhoneNumber = phoneNumber;
       Cpf = cpf;
@@ -31,7 +31,7 @@ namespace FerreiraCostaAv.Models
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    public Credential  Credencials { get; set; }
+    public Credential Credential { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
     public int Cpf { get; set; }
@@ -39,6 +39,6 @@ namespace FerreiraCostaAv.Models
     public string MothersName { get; set; }
     public StatusEnum Status { get; set; }
     public DateTime InclusionDate { get; set; }
-    public DateTime ChangeDate { get; set; }
+    public DateTime? ChangeDate { get; set; }
   }
 }

@@ -8,9 +8,10 @@ namespace FerreiraCostaAv.DTO
 {
   public class UserDTO
   {
-    public UserDTO(CredentialDTO credencials, string email, string phoneNumber, int cpf, DateTime birthDate, string mothersName, StatusEnum status, DateTime inclusionDate, DateTime changeDate)
+    public UserDTO(int id, CredentialDTO credencials, string email, string phoneNumber, int cpf, DateTime birthDate, string mothersName, StatusEnum status, DateTime inclusionDate, DateTime? changeDate)
     {
-      Credencials = credencials;
+      Id = id;
+      Credential = credencials;
       Email = email;
       PhoneNumber = phoneNumber;
       Cpf = cpf;
@@ -21,7 +22,8 @@ namespace FerreiraCostaAv.DTO
       ChangeDate = changeDate;
     }
 
-    public CredentialDTO Credencials { get; set; }
+    public int Id { get; set; }
+    public CredentialDTO Credential { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
     public int Cpf { get; set; }
@@ -29,6 +31,6 @@ namespace FerreiraCostaAv.DTO
     public string MothersName { get; set; }
     public StatusEnum Status { get; set; }
     public DateTime InclusionDate { get; set; }
-    public DateTime ChangeDate { get; set; }
+    public DateTime? ChangeDate { get; set; }
   }
 }

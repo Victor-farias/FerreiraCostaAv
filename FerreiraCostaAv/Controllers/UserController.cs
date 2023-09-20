@@ -1,4 +1,6 @@
 ﻿using FerreiraCostaAv.Data;
+using FerreiraCostaAv.DTO;
+using FerreiraCostaAv.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,9 +27,16 @@ namespace FerreiraCostaAv.Controllers
       return Ok();
     }
 
-    [HttpPost]
-    public IActionResult NewUser()
+    [HttpGet]
+    public IActionResult RecoverPassword()
     {
+      return Ok();
+    }
+
+    [HttpPost]
+    public IActionResult NewUser([FromBody] UserDTO user)
+    {
+
       return Ok();
     }
 
