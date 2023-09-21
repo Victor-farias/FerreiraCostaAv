@@ -5,18 +5,24 @@ using FerreiraCostaAv.Interfaces;
 using FerreiraCostaAv.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace FerreiraCostaAv.Services
 {
   public class UserService : IUserService
   {
     private readonly ApplicationDbContext dbContext;
+    private readonly IConfiguration configuration;
 
     public UserService(ApplicationDbContext dbContext)
     {
@@ -150,6 +156,25 @@ namespace FerreiraCostaAv.Services
       }
 
       return false;
+    }
+
+    public string GenerateJwtToken(string userName)
+    {
+      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]));
+
+      var tokenDescriptor = new SecurityTokenDescriptor
+      {
+        Subject = new ClaimsIdentity(new[]
+          {
+           new Claim(ClaimTypes.Name, userName),
+           }),
+        Expires = DateTime.UtcNow.AddHours(1),
+        SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature),
+      };
+
+      var tokenHandler = new JwtSecurityTokenHandler();
+      var token = tokenHandler.CreateToken(tokenDescriptor);
+      return tokenHandler.WriteToken(token);
     }
   }
 }

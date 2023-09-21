@@ -9,6 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using FerreiraCostaAv.Interfaces;
+using FerreiraCostaAv.Services;
 
 namespace FerreiraCostaAv
 {
@@ -28,6 +33,24 @@ namespace FerreiraCostaAv
 
       services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+      services.AddScoped<IUserService, UserService>();
+
+
+      var key = Encoding.ASCII.GetBytes(Configuration["JwtSettings:SecretKey"]);
+
+      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+          {
+            options.RequireHttpsMetadata = false; 
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+              ValidateIssuer = false, 
+              ValidateAudience = false,
+              IssuerSigningKey = new SymmetricSecurityKey(key),
+            };
+          });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

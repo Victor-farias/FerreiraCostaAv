@@ -2,6 +2,7 @@
 using FerreiraCostaAv.DTO;
 using FerreiraCostaAv.Interfaces;
 using FerreiraCostaAv.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,7 +26,7 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpPost]
-    public IActionResult Login([FromBody] string userName, [FromBody] string password)
+    public IActionResult Login([FromBody] string userName, string password)
     {
       try
       {
@@ -67,6 +68,7 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpGet]
+    [Authorize]
     public IActionResult GetUsers()
     {
       try
@@ -80,6 +82,7 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpPut]
+    [Authorize]
     public IActionResult Edituser([FromBody] UserDTO userDTO)
     {
       try
@@ -94,6 +97,7 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpDelete]
+    [Authorize]
     public IActionResult DeleteUser([FromBody] List<UserDTO> usersDTO)
     {
       try
