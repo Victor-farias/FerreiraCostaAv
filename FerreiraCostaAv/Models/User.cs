@@ -15,7 +15,7 @@ namespace FerreiraCostaAv.Models
     {
     }
 
-    public User(Credential credential, string email, string phoneNumber, int cpf, DateTime birthDate, string mothersName, StatusEnum status, DateTime inclusionDate, DateTime? changeDate)
+    public User(Credential credential, string email, string phoneNumber, int cpf, DateTime birthDate, string mothersName, StatusEnum status, DateTime inclusionDate, DateTime changeDate)
     {
       Credential = credential;
       Email = email;
@@ -39,6 +39,6 @@ namespace FerreiraCostaAv.Models
     public string MothersName { get; set; }
     public StatusEnum Status { get; set; }
     public DateTime InclusionDate { get; set; }
-    public DateTime? ChangeDate { get; set; }
+    public DateTime ChangeDate { get; set; }
   }
 }
