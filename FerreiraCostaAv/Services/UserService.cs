@@ -1,24 +1,30 @@
 ﻿using FerreiraCostaAv.Data;
 using FerreiraCostaAv.DTO;
 using FerreiraCostaAv.Enums;
+using FerreiraCostaAv.Interfaces;
 using FerreiraCostaAv.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace FerreiraCostaAv.Services
 {
-  public static class UserService
+  public class UserService : IUserService
   {
-    private static ApplicationDbContext dbContext;
+    private readonly ApplicationDbContext dbContext;
 
-    //Dates field would be ommited on fron end
-    public static List<User> NewUser(UserDTO userDTO)
+    public UserService(ApplicationDbContext dbContext)
     {
-      var usersDTO = new List<UserDTO>();
+      this.dbContext = dbContext;
+    }
+
+    public List<User> NewUser(UserDTO userDTO)
+    {
       if (!LoginAlreadyExists(userDTO))
       {
         dbContext.Add(
@@ -34,17 +40,17 @@ namespace FerreiraCostaAv.Services
               DateTime.Now,
               DateTime.Now));
 
-        dbContext.SaveChanges(); 
+        this.dbContext.SaveChanges();
       }
 
       return GetUsers();
     }
 
-    public static List<User> EditUser(UserDTO userDTO)
+    public List<User> EditUser(UserDTO userDTO)
     {
       if (!LoginAlreadyExists(userDTO))
       {
-        var user = dbContext.Users.Include(i => i.Credential).First(w => w.Id == userDTO.Id);
+        var user = this.dbContext.Users.Include(i => i.Credential).First(w => w.Id == userDTO.Id);
 
         user.BirthDate = userDTO.BirthDate;
         user.ChangeDate = DateTime.Now;
@@ -58,32 +64,32 @@ namespace FerreiraCostaAv.Services
         user.PhoneNumber = userDTO.PhoneNumber;
         user.Status = userDTO.Status;
 
-        dbContext.SaveChanges(); 
+        this.dbContext.SaveChanges(); 
       }
 
       return GetUsers();
     }
 
-    public static List<User> DeleteUsers(List<UserDTO> usersDTO)
+    public List<User> DeleteUsers(List<UserDTO> usersDTO)
     {
       var userIds = usersDTO.Select(s => s.Id);
-      var usersToDelete = dbContext.Users.Where(w => userIds.Contains(w.Id)).ToList();
+      var usersToDelete = this.dbContext.Users.Where(w => userIds.Contains(w.Id)).ToList();
 
       usersToDelete.ForEach(user => user.Status = StatusEnum.Inativo);
-      dbContext.SaveChanges();
+      this.dbContext.SaveChanges();
 
       return GetUsers();
     }
 
     //Since users status filters would be on the front end, sending all the users regardless of theis status 
-    public static List<User> GetUsers()
+    public List<User> GetUsers()
     {
-      return dbContext.Users.ToList();
+      return this.dbContext.Users.ToList();
     }
 
-    public static List<User> Login(string userName, string password)
+    public List<User> Login(string userName, string password)
     {
-      var user =  dbContext.Users.Include(i => i.Credential).First(f => f.Credential.Login == userName && f.Credential.Password == password);
+      var user = this.dbContext.Users.Include(i => i.Credential).First(f => f.Credential.Login == userName && f.Credential.Password == password);
       var isActive = user.Status.Equals(StatusEnum.Ativo);
       if (user != null && isActive)
       {
@@ -95,13 +101,50 @@ namespace FerreiraCostaAv.Services
       throw new Exception("Nome de usuário ou senha incorretos.");
     }
 
-    private static bool LoginAlreadyExists(UserDTO userDTO)
+    public string RecoverPassword(RecoverPasswordDTO recoverPasswordDTO)
     {
-      if (dbContext.Credentials.Any(a => a.Login.Equals(userDTO.Credential.Login)))
+      var user = this.dbContext.Users.Include(i => i.Credential).First(f => f.Email.Equals(recoverPasswordDTO.Email));
+      if (user != null)
+      {
+        if (recoverPasswordDTO.BirthDate.Equals(user.BirthDate) || recoverPasswordDTO.Cpf.Equals(user.Cpf) || recoverPasswordDTO.MothersName.Equals(user.MothersName) || recoverPasswordDTO.PhoneNumber.Equals(user.PhoneNumber))
+        {
+          SendPassword(user.Email, user.Credential.Password);
+          return "Um email foi enviado para o seu endereço de email cadastrado contendo sua senha";
+        }
+      }
+
+      throw new Exception("Nenhum usuário cadastrado com esse email");
+    }
+
+    public void SendPassword(string email, string password)
+    {
+      var smtpClient = new SmtpClient("smtp.gmail.com")
+      {
+        Port = 587, 
+        Credentials = new NetworkCredential("testevictorfc@gmail.com", "segurancaeimportante"),
+        EnableSsl = true, 
+      };
+
+      var mailMessage = new MailMessage
+      {
+        From = new MailAddress("testevictorfc@gmail.com"),
+        Subject = "Recuperação de Senha",
+        Body = $"Sua senha é: {password}",
+        IsBodyHtml = false, 
+      };
+
+      mailMessage.To.Add(email);
+
+      smtpClient.Send(mailMessage);
+    }
+
+    public bool LoginAlreadyExists(UserDTO userDTO)
+    {
+      if (this.dbContext.Credentials.Any(a => a.Login.Equals(userDTO.Credential.Login)))
       {
         throw new Exception("Nome de usuário já em uso.");
       }
-      else if (dbContext.Credentials.Any(a => a.Login.Equals(userDTO.Credential.Login)))
+      else if (this.dbContext.Credentials.Any(a => a.Login.Equals(userDTO.Credential.Login)))
       {
         throw new Exception("Senha já em uso.");
       }

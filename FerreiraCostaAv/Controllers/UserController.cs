@@ -1,5 +1,6 @@
 ﻿using FerreiraCostaAv.Data;
 using FerreiraCostaAv.DTO;
+using FerreiraCostaAv.Interfaces;
 using FerreiraCostaAv.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace FerreiraCostaAv.Controllers
   public class UserController : ControllerBase
   {
     private readonly ApplicationDbContext dbContext;
+    private readonly IUserService userService;
 
-    public UserController(ApplicationDbContext dbContext)
+    public UserController(ApplicationDbContext dbContext, IUserService userService)
     {
       this.dbContext = dbContext;
+      this.userService = userService;
     }
 
     [HttpPost]
@@ -26,7 +29,7 @@ namespace FerreiraCostaAv.Controllers
     {
       try
       {
-        var loginResult = UserService.Login(userName, password);
+        var loginResult = this.userService.Login(userName, password);
 
         return Ok(loginResult);
       }
@@ -37,9 +40,16 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpGet]
-    public IActionResult RecoverPassword()
+    public IActionResult RecoverPassword([FromBody] RecoverPasswordDTO recoverPasswordDTO)
     {
-      return Ok();
+      try
+      {
+        return Ok(this.userService.RecoverPassword(recoverPasswordDTO));
+      }
+      catch (Exception e)
+      {
+        return BadRequest(e.Message);
+      }
     }
 
     [HttpPost]
@@ -47,7 +57,7 @@ namespace FerreiraCostaAv.Controllers
     {
       try
       {
-        var newUserResult = UserService.NewUser(userDTO);
+        var newUserResult = this.userService.NewUser(userDTO);
         return Ok(newUserResult);
       }
       catch (Exception e)
@@ -61,7 +71,7 @@ namespace FerreiraCostaAv.Controllers
     {
       try
       {
-        return Ok(UserService.GetUsers());
+        return Ok(this.userService.GetUsers());
       }
       catch (Exception e)
       {
@@ -74,7 +84,7 @@ namespace FerreiraCostaAv.Controllers
     {
       try
       {
-        var editUserResult = UserService.EditUser(userDTO);
+        var editUserResult = this.userService.EditUser(userDTO);
         return Ok(editUserResult);
       }
       catch (Exception e)
@@ -88,7 +98,7 @@ namespace FerreiraCostaAv.Controllers
     {
       try
       {
-        var deleteResult = UserService.DeleteUsers(usersDTO);
+        var deleteResult = this.userService.DeleteUsers(usersDTO);
         return Ok(deleteResult);
       }
       catch (Exception e)
