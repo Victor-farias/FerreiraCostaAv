@@ -1,5 +1,6 @@
 ﻿using FerreiraCostaAv.Data;
 using FerreiraCostaAv.DTO;
+using FerreiraCostaAv.Enums;
 using FerreiraCostaAv.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,54 +15,98 @@ namespace FerreiraCostaAv.Services
   {
     private static ApplicationDbContext dbContext;
 
-    public static void NewUser(UserDTO userDTO)
+    //Dates field would be ommited on fron end
+    public static List<User> NewUser(UserDTO userDTO)
     {
-      dbContext.Add(
-        new User(
-          new Credential(userDTO.Credential.Login, 
-          userDTO.Credential.Password), 
-          userDTO.Email, 
-          userDTO.PhoneNumber, 
-          userDTO.Cpf, 
-          userDTO.BirthDate, 
-          userDTO.MothersName, 
-          userDTO.Status, 
-          DateTime.Now, 
-          null));
-      
-      dbContext.SaveChanges();
+      var usersDTO = new List<UserDTO>();
+      if (!LoginAlreadyExists(userDTO))
+      {
+        dbContext.Add(
+            new User(
+              new Credential(userDTO.Credential.Login,
+              userDTO.Credential.Password),
+              userDTO.Email,
+              userDTO.PhoneNumber,
+              userDTO.Cpf,
+              userDTO.BirthDate,
+              userDTO.MothersName,
+              userDTO.Status,
+              DateTime.Now,
+              DateTime.Now));
+
+        dbContext.SaveChanges(); 
+      }
+
+      return GetUsers();
     }
 
-    public static void EditUser(UserDTO userDTO)
+    public static List<User> EditUser(UserDTO userDTO)
     {
-      var user = dbContext.Users.Include(i => i.Credential).First(w => w.Id == userDTO.Id);
+      if (!LoginAlreadyExists(userDTO))
+      {
+        var user = dbContext.Users.Include(i => i.Credential).First(w => w.Id == userDTO.Id);
 
-      user.BirthDate = userDTO.BirthDate;
-      user.ChangeDate = DateTime.Now;
-      user.Cpf = userDTO.Cpf;
-      user.Credential.Login = userDTO.Credential.Login;
-      user.Credential.Password = userDTO.Credential.Password;
-      user.Email = userDTO.Email;
-      user.InclusionDate = userDTO.InclusionDate;
-      user.MothersName = userDTO.PhoneNumber;
-      user.PhoneNumber = userDTO.PhoneNumber;
-      user.Status = userDTO.Status;
+        user.BirthDate = userDTO.BirthDate;
+        user.ChangeDate = DateTime.Now;
+        user.Cpf = userDTO.Cpf;
+        user.Credential.Login = userDTO.Credential.Login;
+        user.Credential.Password = userDTO.Credential.Password;
+        user.Email = userDTO.Email;
+        user.InclusionDate = userDTO.InclusionDate;
+        user.ChangeDate = DateTime.Now;
+        user.MothersName = userDTO.PhoneNumber;
+        user.PhoneNumber = userDTO.PhoneNumber;
+        user.Status = userDTO.Status;
 
-      dbContext.SaveChanges();
+        dbContext.SaveChanges(); 
+      }
+
+      return GetUsers();
     }
 
-    public static void DeleteUsers(List<UserDTO> usersDTO)
+    public static List<User> DeleteUsers(List<UserDTO> usersDTO)
     {
       var userIds = usersDTO.Select(s => s.Id);
-      var usersToDelete = dbContext.Users.Where(w => userIds.Contains(w.Id));
+      var usersToDelete = dbContext.Users.Where(w => userIds.Contains(w.Id)).ToList();
 
-      dbContext.Users.RemoveRange(usersToDelete);
+      usersToDelete.ForEach(user => user.Status = StatusEnum.Inativo);
       dbContext.SaveChanges();
+
+      return GetUsers();
     }
 
+    //Since users status filters would be on the front end, sending all the users regardless of theis status 
     public static List<User> GetUsers()
     {
       return dbContext.Users.ToList();
+    }
+
+    public static List<User> Login(string userName, string password)
+    {
+      var user =  dbContext.Users.Include(i => i.Credential).First(f => f.Credential.Login == userName && f.Credential.Password == password);
+      var isActive = user.Status.Equals(StatusEnum.Ativo);
+      if (user != null && isActive)
+      {
+        return GetUsers();
+      } else if (user != null && !isActive)
+      {
+        throw new Exception($"Usuário marcado como {user.Status} no sistema.");
+      } 
+      throw new Exception("Nome de usuário ou senha incorretos.");
+    }
+
+    private static bool LoginAlreadyExists(UserDTO userDTO)
+    {
+      if (dbContext.Credentials.Any(a => a.Login.Equals(userDTO.Credential.Login)))
+      {
+        throw new Exception("Nome de usuário já em uso.");
+      }
+      else if (dbContext.Credentials.Any(a => a.Login.Equals(userDTO.Credential.Login)))
+      {
+        throw new Exception("Senha já em uso.");
+      }
+
+      return false;
     }
   }
 }

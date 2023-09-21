@@ -22,12 +22,13 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpPost]
-    public IActionResult Login()
+    public IActionResult Login([FromBody] string userName, [FromBody] string password)
     {
       try
       {
-        //UserService.NewUser(user);
-        return Ok();
+        var loginResult = UserService.Login(userName, password);
+
+        return Ok(loginResult);
       }
       catch (Exception e)
       {
@@ -44,11 +45,10 @@ namespace FerreiraCostaAv.Controllers
     [HttpPost]
     public IActionResult NewUser([FromBody] UserDTO userDTO)
     {
-
       try
       {
-        UserService.NewUser(userDTO);
-        return Ok("New user added successfully");
+        var newUserResult = UserService.NewUser(userDTO);
+        return Ok(newUserResult);
       }
       catch (Exception e)
       {
@@ -74,8 +74,8 @@ namespace FerreiraCostaAv.Controllers
     {
       try
       {
-        UserService.EditUser(userDTO);
-        return Ok("User edited successfully.");
+        var editUserResult = UserService.EditUser(userDTO);
+        return Ok(editUserResult);
       }
       catch (Exception e)
       {
@@ -88,8 +88,8 @@ namespace FerreiraCostaAv.Controllers
     {
       try
       {
-        UserService.DeleteUsers(usersDTO);
-        return Ok("Users deleted successfully.");
+        var deleteResult = UserService.DeleteUsers(usersDTO);
+        return Ok(deleteResult);
       }
       catch (Exception e)
       {
