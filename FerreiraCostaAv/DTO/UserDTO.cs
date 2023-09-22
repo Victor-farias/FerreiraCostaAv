@@ -20,7 +20,5 @@ namespace FerreiraCostaAv.DTO
     public DateTime BirthDate { get; set; }
     public string MothersName { get; set; }
     public string Status { get; set; }
-    public DateTime? InclusionDate { get; set; }
-    public DateTime? ChangeDate { get; set; }
   }
 }

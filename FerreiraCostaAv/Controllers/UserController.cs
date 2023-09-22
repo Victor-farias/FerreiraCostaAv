@@ -105,13 +105,13 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpDelete("deleteUser")]
+    [HttpDelete("deleteUsers")]
     [Authorize]
-    public IActionResult DeleteUser([FromBody] List<UserDTO> usersDTO)
+    public IActionResult DeleteUsers([FromBody] List<int> ids)
     {
       try
       {
-        var deleteResult = this.userService.DeleteUsers(usersDTO);
+        var deleteResult = this.userService.DeleteUsers(ids);
         return Ok(deleteResult);
       }
       catch (Exception e)

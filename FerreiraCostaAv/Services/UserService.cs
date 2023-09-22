@@ -32,7 +32,7 @@ namespace FerreiraCostaAv.Services
 
     public List<User> NewUser(UserDTO userDTO)
     {
-      if (!LoginAlreadyExists(userDTO))
+      if (!LoginAlreadyInUse(userDTO))
       {
         dbContext.Add(
             new User(
@@ -55,7 +55,8 @@ namespace FerreiraCostaAv.Services
 
     public List<User> EditUser(UserDTO userDTO)
     {
-      if (!LoginAlreadyExists(userDTO))
+      //Verifying if new user name ow password passed aren't already being used by another user
+      if (!LoginAlreadyInUse(userDTO))
       {
         var user = this.dbContext.Users.Include(i => i.Credential).First(w => w.Id == userDTO.Id);
 
@@ -65,7 +66,6 @@ namespace FerreiraCostaAv.Services
         user.Credential.Login = userDTO.Credential.Login;
         user.Credential.Password = userDTO.Credential.Password;
         user.Email = userDTO.Email;
-        user.InclusionDate = userDTO.InclusionDate.Value;
         user.ChangeDate = DateTime.Now;
         user.MothersName = userDTO.PhoneNumber;
         user.PhoneNumber = userDTO.PhoneNumber;
@@ -77,10 +77,9 @@ namespace FerreiraCostaAv.Services
       return GetUsers();
     }
 
-    public List<User> DeleteUsers(List<UserDTO> usersDTO)
+    public List<User> DeleteUsers(List<int> ids)
     {
-      var userIds = usersDTO.Select(s => s.Id);
-      var usersToDelete = this.dbContext.Users.Where(w => userIds.Contains(w.Id)).ToList();
+      var usersToDelete = this.dbContext.Users.Where(w => ids.Contains(w.Id)).ToList();
 
       usersToDelete.ForEach(user => user.Status = StatusEnum.Inativo.ToString());
       this.dbContext.SaveChanges();
@@ -122,8 +121,11 @@ namespace FerreiraCostaAv.Services
         {
           SendPassword(user.Email, user.Credential.Password);
           return "Um email foi enviado para o seu endereço de email cadastrado contendo sua senha";
+        } else
+        {
+          throw new Exception("Informação incorreta");
         }
-      }
+      } 
 
       throw new Exception("Nenhum usuário cadastrado com esse email");
     }
@@ -150,13 +152,14 @@ namespace FerreiraCostaAv.Services
       smtpClient.Send(mailMessage);
     }
 
-    public bool LoginAlreadyExists(UserDTO userDTO)
+    public bool LoginAlreadyInUse(UserDTO userDTO)
     {
-      if (this.dbContext.Credentials.Any(a => a.Login.Equals(userDTO.Credential.Login)))
+      var userId = userDTO.Id ?? 0;
+      if (this.dbContext.Users.Include(i => i.Credential).Any(a => a.Credential.Login.Equals(userDTO.Credential.Login) && userId != a.Id)) 
       {
         throw new Exception("Nome de usuário já em uso.");
       }
-      else if (this.dbContext.Credentials.Any(a => a.Password.Equals(userDTO.Credential.Password)))
+      else if (this.dbContext.Users.Include(i => i.Credential).Any(a => a.Credential.Password.Equals(userDTO.Credential.Password) && userId != a.Id))
       {
         throw new Exception("Senha já em uso.");
       }
