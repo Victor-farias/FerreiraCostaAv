@@ -64,7 +64,7 @@ namespace FerreiraCostaAv.Services
         user.Credential.Login = userDTO.Credential.Login;
         user.Credential.Password = userDTO.Credential.Password;
         user.Email = userDTO.Email;
-        user.InclusionDate = userDTO.InclusionDate;
+        user.InclusionDate = userDTO.InclusionDate.Value;
         user.ChangeDate = DateTime.Now;
         user.MothersName = userDTO.PhoneNumber;
         user.PhoneNumber = userDTO.PhoneNumber;
@@ -81,7 +81,7 @@ namespace FerreiraCostaAv.Services
       var userIds = usersDTO.Select(s => s.Id);
       var usersToDelete = this.dbContext.Users.Where(w => userIds.Contains(w.Id)).ToList();
 
-      usersToDelete.ForEach(user => user.Status = StatusEnum.Inativo);
+      usersToDelete.ForEach(user => user.Status = StatusEnum.Inativo.ToString());
       this.dbContext.SaveChanges();
 
       return GetUsers();

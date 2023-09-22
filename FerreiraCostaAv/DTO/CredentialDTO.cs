@@ -7,10 +7,8 @@ namespace FerreiraCostaAv.DTO
 {
   public class CredentialDTO
   {
-    public CredentialDTO(string login, string password)
+    public CredentialDTO()
     {
-      Login = login;
-      Password = password;
     }
 
     public string Login { get; set; }

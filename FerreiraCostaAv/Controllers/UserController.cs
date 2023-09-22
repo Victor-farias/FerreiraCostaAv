@@ -25,7 +25,7 @@ namespace FerreiraCostaAv.Controllers
       this.userService = userService;
     }
 
-    [HttpPost]
+    [HttpPost("login")]
     public IActionResult Login([FromBody] string userName, string password)
     {
       try
@@ -40,7 +40,7 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpGet]
+    [HttpGet("recoverPassword")]
     public IActionResult RecoverPassword([FromBody] RecoverPasswordDTO recoverPasswordDTO)
     {
       try
@@ -53,7 +53,7 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpPost]
+    [HttpPost("newUser")]
     public IActionResult NewUser([FromBody] UserDTO userDTO)
     {
       try
@@ -67,7 +67,7 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpGet]
+    [HttpGet("getUsers")]
     [Authorize]
     public IActionResult GetUsers()
     {
@@ -81,7 +81,7 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpPut]
+    [HttpPut("editUser")]
     [Authorize]
     public IActionResult Edituser([FromBody] UserDTO userDTO)
     {
@@ -96,7 +96,7 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpDelete]
+    [HttpDelete("deleteUser")]
     [Authorize]
     public IActionResult DeleteUser([FromBody] List<UserDTO> usersDTO)
     {
