@@ -11,8 +11,9 @@ namespace FerreiraCostaAv.Interfaces
   {
     List<User> DeleteUsers(List<UserDTO> usersDTO);
     List<User> EditUser(UserDTO userDTO);
+    string GenerateJwtToken(string userName);
     List<User> GetUsers();
-    List<User> Login(string userName, string password);
+    List<User> Login(LoginInfoDTO loginInfoDTO);
     bool LoginAlreadyExists(UserDTO userDTO);
     List<User> NewUser(UserDTO userDTO);
     string RecoverPassword(RecoverPasswordDTO recoverPasswordDTO);

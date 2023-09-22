@@ -24,9 +24,10 @@ namespace FerreiraCostaAv.Services
     private readonly ApplicationDbContext dbContext;
     private readonly IConfiguration configuration;
 
-    public UserService(ApplicationDbContext dbContext)
+    public UserService(ApplicationDbContext dbContext, IConfiguration configuration)
     {
       this.dbContext = dbContext;
+      this.configuration = configuration;
     }
 
     public List<User> NewUser(UserDTO userDTO)
@@ -93,23 +94,28 @@ namespace FerreiraCostaAv.Services
       return this.dbContext.Users.ToList();
     }
 
-    public List<User> Login(string userName, string password)
+    public List<User> Login(LoginInfoDTO loginInfoDTO)
     {
-      var user = this.dbContext.Users.Include(i => i.Credential).First(f => f.Credential.Login == userName && f.Credential.Password == password);
-      var isActive = user.Status.Equals(StatusEnum.Ativo);
-      if (user != null && isActive)
+      var user = dbContext.Users
+       .Include(u => u.Credential)
+       .FirstOrDefault(u => u.Credential.Login == loginInfoDTO.UserName && u.Credential.Password == loginInfoDTO.Password);
+
+      if (user == null)
       {
-        return GetUsers();
-      } else if (user != null && !isActive)
+        throw new Exception("Nome de usuário ou senha incorretos.");
+      }
+
+      if (!user.Status.Equals(StatusEnum.Ativo.ToString()))
       {
         throw new Exception($"Usuário marcado como {user.Status} no sistema.");
-      } 
-      throw new Exception("Nome de usuário ou senha incorretos.");
+      }
+
+      return GetUsers();
     }
 
     public string RecoverPassword(RecoverPasswordDTO recoverPasswordDTO)
     {
-      var user = this.dbContext.Users.Include(i => i.Credential).First(f => f.Email.Equals(recoverPasswordDTO.Email));
+      var user = this.dbContext.Users.Include(i => i.Credential).FirstOrDefault(f => f.Email.Equals(recoverPasswordDTO.Email));
       if (user != null)
       {
         if (recoverPasswordDTO.BirthDate.Equals(user.BirthDate) || recoverPasswordDTO.Cpf.Equals(user.Cpf) || recoverPasswordDTO.MothersName.Equals(user.MothersName) || recoverPasswordDTO.PhoneNumber.Equals(user.PhoneNumber))
@@ -150,7 +156,7 @@ namespace FerreiraCostaAv.Services
       {
         throw new Exception("Nome de usuário já em uso.");
       }
-      else if (this.dbContext.Credentials.Any(a => a.Login.Equals(userDTO.Credential.Login)))
+      else if (this.dbContext.Credentials.Any(a => a.Password.Equals(userDTO.Credential.Password)))
       {
         throw new Exception("Senha já em uso.");
       }

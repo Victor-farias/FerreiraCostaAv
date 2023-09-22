@@ -36,6 +36,7 @@ namespace FerreiraCostaAv
 
       services.AddScoped<IUserService, UserService>();
 
+      services.AddSingleton<IConfiguration>(Configuration);
 
       var key = Encoding.ASCII.GetBytes(Configuration["JwtSettings:SecretKey"]);
 

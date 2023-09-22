@@ -26,13 +26,21 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] string userName, string password)
+    public IActionResult Login([FromBody] LoginInfoDTO loginInfoDTO)
     {
       try
       {
-        var loginResult = this.userService.Login(userName, password);
+        var loginResult = this.userService.Login(loginInfoDTO);
 
-        return Ok(loginResult);
+        var token = this.userService.GenerateJwtToken(loginInfoDTO.UserName);
+
+        var response = new
+        {
+          Login = loginResult,
+          Token = token
+        };
+
+        return Ok(response);
       }
       catch (Exception e)
       {
@@ -59,6 +67,7 @@ namespace FerreiraCostaAv.Controllers
       try
       {
         var newUserResult = this.userService.NewUser(userDTO);
+        
         return Ok(newUserResult);
       }
       catch (Exception e)
