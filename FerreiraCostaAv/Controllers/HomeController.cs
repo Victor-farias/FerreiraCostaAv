@@ -1,4 +1,6 @@
-﻿using FerreiraCostaAv.Models;
+﻿using FerreiraCostaAv.Data;
+using FerreiraCostaAv.Interfaces;
+using FerreiraCostaAv.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,10 +14,14 @@ namespace FerreiraCostaAv.Controllers
   public class HomeController : Controller
   {
     private readonly ILogger<HomeController> _logger;
+    private readonly ApplicationDbContext dbContext;
+    private readonly IUserService userService;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext, IUserService userService)
     {
-      _logger = logger;
+      this._logger = logger;
+      this.dbContext = dbContext;
+      this.userService = userService;
     }
 
     public IActionResult Index()

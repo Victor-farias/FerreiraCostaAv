@@ -15,7 +15,7 @@ namespace FerreiraCostaAv.Interfaces
     List<User> GetUsers();
     List<User> Login(LoginInfoDTO loginInfoDTO);
     bool LoginAlreadyInUse(UserDTO userDTO);
-    List<User> NewUser(UserDTO userDTO);
+    void SaveUser(UserDTO userDTO);
     string RecoverPassword(RecoverPasswordDTO recoverPasswordDTO);
     void SendPassword(string email, string password);
   }

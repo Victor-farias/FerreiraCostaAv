@@ -30,7 +30,7 @@ namespace FerreiraCostaAv.Services
       this.configuration = configuration;
     }
 
-    public List<User> NewUser(UserDTO userDTO)
+    public void SaveUser(UserDTO userDTO)
     {
       if (!LoginAlreadyInUse(userDTO))
       {
@@ -49,8 +49,6 @@ namespace FerreiraCostaAv.Services
 
         this.dbContext.SaveChanges();
       }
-
-      return GetUsers();
     }
 
     public List<User> EditUser(UserDTO userDTO)
@@ -90,7 +88,7 @@ namespace FerreiraCostaAv.Services
     //Since users status filters would be on the front end, sending all the users regardless of theis status 
     public List<User> GetUsers()
     {
-      return this.dbContext.Users.ToList();
+      return this.dbContext.Users.Include(i => i.Credential).ToList();
     }
 
     public List<User> Login(LoginInfoDTO loginInfoDTO)

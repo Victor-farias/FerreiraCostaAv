@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Lista de Usuários";
+}
+
+<h2 class="text-center">Lista de Usuários</h2>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+            <p class="text-right">
+                <a asp-action="NewUser" asp-controller="User" class="btn btn-primary">Inserir Novo Usuário</a>
+            </p>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Email</th>
+                            <th>Situação</th>
+                            <th>Data de Nascimento</th>
+                            <th>Telefone</th>
+                            <th>Data de Inclusão</th>
+                            <th>Data de Alteração</th>
+                            <th>Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.Credential.Login</td>
+                                <td>@user.Cpf</td>
+                                <td>@user.Email</td>
+                                <td>@user.Status</td>
+                                <td>@user.BirthDate</td>
+                                <td>@user.PhoneNumber</td>
+                                <td>@user.InclusionDate</td>
+                                <td>@user.ChangeDate</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a asp-action="EditUser" asp-controller="User" asp-route-id="@user.Id" class="btn btn-success">Editar</a>
+                                        <a asp-action="DeleteUsers" asp-controller="User" asp-route-ids="@user.Id" class="btn btn-danger">Deletar</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

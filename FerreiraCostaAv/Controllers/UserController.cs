@@ -12,9 +12,8 @@ using System.Threading.Tasks;
 
 namespace FerreiraCostaAv.Controllers
 {
-  [Route("api/[controller]")]
-  [ApiController]
-  public class UserController : ControllerBase
+  [Route("[controller]")]
+  public class UserController : Controller
   {
     private readonly ApplicationDbContext dbContext;
     private readonly IUserService userService;
@@ -26,7 +25,7 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginInfoDTO loginInfoDTO)
+    public IActionResult Login(LoginInfoDTO loginInfoDTO)
     {
       try
       {
@@ -40,16 +39,17 @@ namespace FerreiraCostaAv.Controllers
           Token = token
         };
 
-        return Ok(response);
+        return RedirectToAction("Users");
       }
       catch (Exception e)
       {
-        return BadRequest(e.Message);
+        TempData["ErrorMessage"] = e.Message;
+        return RedirectToAction("Index", "Home");
       }
     }
 
     [HttpGet("recoverPassword")]
-    public IActionResult RecoverPassword([FromBody] RecoverPasswordDTO recoverPasswordDTO)
+    public IActionResult RecoverPassword(RecoverPasswordDTO recoverPasswordDTO)
     {
       try
       {
@@ -61,14 +61,12 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpPost("newUser")]
-    public IActionResult NewUser([FromBody] UserDTO userDTO)
+    [HttpGet("newUser")]
+    public IActionResult NewUser()
     {
       try
       {
-        var newUserResult = this.userService.NewUser(userDTO);
-        
-        return Ok(newUserResult);
+        return View();
       }
       catch (Exception e)
       {
@@ -76,13 +74,29 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpGet("getUsers")]
-    [Authorize]
-    public IActionResult GetUsers()
+    [HttpPost("saveUser")]
+    public IActionResult SaveUser(UserDTO userDTO)
     {
       try
       {
-        return Ok(this.userService.GetUsers());
+        this.userService.SaveUser(userDTO);
+
+        return RedirectToAction("Users");
+      }
+      catch (Exception e)
+      {
+        TempData["ErrorMessage"] = e.Message;
+        return RedirectToAction("Users");
+      }
+    }
+
+    [HttpGet("Users")]
+    public IActionResult Users()
+    {
+      try
+      {
+        var users = this.userService.GetUsers();
+        return View(users);
       }
       catch (Exception e)
       {
@@ -91,8 +105,7 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpPut("editUser")]
-    [Authorize]
-    public IActionResult Edituser([FromBody] UserDTO userDTO)
+    public IActionResult Edituser(UserDTO userDTO)
     {
       try
       {
@@ -101,13 +114,13 @@ namespace FerreiraCostaAv.Controllers
       }
       catch (Exception e)
       {
-        return BadRequest(e.Message);
+        TempData["ErrorMessage"] = e.Message;
+        return RedirectToAction("Users");
       }
     }
 
     [HttpDelete("deleteUsers")]
-    [Authorize]
-    public IActionResult DeleteUsers([FromBody] List<int> ids)
+    public IActionResult DeleteUsers(List<int> ids)
     {
       try
       {
@@ -116,7 +129,8 @@ namespace FerreiraCostaAv.Controllers
       }
       catch (Exception e)
       {
-        return BadRequest(e.Message);
+        TempData["ErrorMessage"] = e.Message;
+        return RedirectToAction("Users");
       }
     }
   }
