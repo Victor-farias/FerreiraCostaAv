@@ -104,13 +104,12 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpPut("editUser")]
+    [HttpPost("EditUser")]
     public IActionResult Edituser(UserDTO userDTO)
     {
       try
       {
-        var editUserResult = this.userService.EditUser(userDTO);
-        return Ok(editUserResult);
+        return View();
       }
       catch (Exception e)
       {
@@ -119,13 +118,13 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpDelete("deleteUsers")]
-    public IActionResult DeleteUsers(List<int> ids)
+    [HttpPost("deleteUsers")]
+    public IActionResult DeleteUsers([FromBody] List<int> ids)
     {
       try
       {
         var deleteResult = this.userService.DeleteUsers(ids);
-        return Ok(deleteResult);
+        return RedirectToAction("Users");
       }
       catch (Exception e)
       {

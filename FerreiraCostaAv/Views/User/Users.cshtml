@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<User>
+
+@{
     ViewData["Title"] = "Lista de Usuários";
 }
 
@@ -16,24 +18,25 @@
             <p class="text-right">
                 <a asp-action="NewUser" asp-controller="User" class="btn btn-primary">Inserir Novo Usuário</a>
             </p>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>CPF</th>
-                            <th>Email</th>
-                            <th>Situação</th>
-                            <th>Data de Nascimento</th>
-                            <th>Telefone</th>
-                            <th>Data de Inclusão</th>
-                            <th>Data de Alteração</th>
-                            <th>Opções</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var user in Model)
-                        {
+            <form id="deleteUsersForm">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Email</th>
+                                <th>Situação</th>
+                                <th>Data de Nascimento</th>
+                                <th>Telefone</th>
+                                <th>Data de Inclusão</th>
+                                <th>Data de Alteração</th>
+                                <th>Selecionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
                             <tr>
                                 <td>@user.Credential.Login</td>
                                 <td>@user.Cpf</td>
@@ -44,16 +47,49 @@
                                 <td>@user.InclusionDate</td>
                                 <td>@user.ChangeDate</td>
                                 <td>
+                                    <input type="checkbox" name="userIds" value="@user.Id" />
+                                </td>
+                                <td>
                                     <div class="btn-group">
                                         <a asp-action="EditUser" asp-controller="User" asp-route-id="@user.Id" class="btn btn-success">Editar</a>
-                                        <a asp-action="DeleteUsers" asp-controller="User" asp-route-ids="@user.Id" class="btn btn-danger">Deletar</a>
                                     </div>
                                 </td>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" onclick="deleteSelectedUsers()" class="btn btn-danger">Excluir Selecionados</button>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+    function deleteSelectedUsers() {
+        var selectedUserIds = [];
+        $('input[name="userIds"]:checked').each(function () {
+            selectedUserIds.push(parseInt($(this).val()));
+        });
+
+        if (selectedUserIds.length === 0) {
+            alert('Selecione pelo menos um usuário para excluir.');
+            return;
+        }
+
+        if (confirm('Tem certeza que deseja excluir os usuários selecionados?')) {
+            $.ajax({
+                type: 'POST',
+                url: '/User/deleteUsers',
+                data: JSON.stringify(selectedUserIds),
+                contentType: 'application/json',
+                success: function (data) {
+                    alert(data); 
+                },
+                error: function (error) {
+                    alert('Erro ao excluir os usuários: ' + error.responseText);
+                }
+            });
+        }
+    }
+</script>
