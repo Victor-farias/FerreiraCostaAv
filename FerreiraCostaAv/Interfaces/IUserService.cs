@@ -9,8 +9,8 @@ namespace FerreiraCostaAv.Interfaces
 {
   public interface IUserService
   {
-    List<User> DeleteUsers(List<int> ids);
-    List<User> EditUser(UserDTO userDTO);
+    void DeleteUsers(List<int> ids);
+    void UpdateUser(UserDTO userDTO);
     string GenerateJwtToken(string userName);
     List<User> GetUsers();
     List<User> Login(LoginInfoDTO loginInfoDTO);
@@ -18,5 +18,7 @@ namespace FerreiraCostaAv.Interfaces
     void SaveUser(UserDTO userDTO);
     string RecoverPassword(RecoverPasswordDTO recoverPasswordDTO);
     void SendPassword(string email, string password);
+    UserDTO GetUserById(int id);
+    UserDTO ConvertToDTO(User user);
   }
 }

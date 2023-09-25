@@ -51,7 +51,7 @@ namespace FerreiraCostaAv.Services
       }
     }
 
-    public List<User> EditUser(UserDTO userDTO)
+    public void UpdateUser(UserDTO userDTO)
     {
       //Verifying if new user name ow password passed aren't already being used by another user
       if (!LoginAlreadyInUse(userDTO))
@@ -71,24 +71,26 @@ namespace FerreiraCostaAv.Services
 
         this.dbContext.SaveChanges(); 
       }
-
-      return GetUsers();
     }
 
-    public List<User> DeleteUsers(List<int> ids)
+    public void DeleteUsers(List<int> ids)
     {
       var usersToDelete = this.dbContext.Users.Where(w => ids.Contains(w.Id)).ToList();
 
       usersToDelete.ForEach(user => user.Status = StatusEnum.Inativo.ToString());
       this.dbContext.SaveChanges();
-
-      return GetUsers();
     }
 
     //Since users status filters would be on the front end, sending all the users regardless of theis status 
     public List<User> GetUsers()
     {
       return this.dbContext.Users.Include(i => i.Credential).ToList();
+    }
+
+    public UserDTO GetUserById(int id)
+    {
+      var user =  this.dbContext.Users.Include(i => i.Credential).FirstOrDefault(f => f.Id == id);
+      return ConvertToDTO(user);
     }
 
     public List<User> Login(LoginInfoDTO loginInfoDTO)
@@ -108,6 +110,11 @@ namespace FerreiraCostaAv.Services
       }
 
       return GetUsers();
+    }
+
+    public UserDTO ConvertToDTO (User user)
+    {
+      return new UserDTO(user.Id, new CredentialDTO(user.Credential.Login, user.Credential.Password), user.Email, user.PhoneNumber, user.Cpf, user.BirthDate, user.MothersName, user.Status); 
     }
 
     public string RecoverPassword(RecoverPasswordDTO recoverPasswordDTO)

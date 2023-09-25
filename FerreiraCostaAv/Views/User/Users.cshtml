@@ -15,9 +15,17 @@
                     @TempData["ErrorMessage"]
                 </div>
             }
-            <p class="text-right">
-                <a asp-action="NewUser" asp-controller="User" class="btn btn-primary">Inserir Novo Usuário</a>
-            </p>
+
+            <div class="text-right">
+                <a asp-action="NewUser" asp-controller="User" class="btn btn-secondary">Inserir Novo Usuário</a>
+            </div>
+
+            <div class="btn-group" style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+                <button onclick="exportToPDF()" class="btn btn-danger">Exportar para PDF</button>
+                <button onclick="exportToWord()" class="btn btn-primary" style="margin-left: 10px; margin-right: 10px;">Exportar para Word</button>
+                <button onclick="exportToExcel()" class="btn btn-success">Exportar para Excel</button>
+            </div>
+
             <form id="deleteUsersForm">
                 <div class="table-responsive">
                     <table class="table table-striped">
@@ -37,24 +45,24 @@
                         <tbody>
                             @foreach (var user in Model)
                             {
-                            <tr>
-                                <td>@user.Credential.Login</td>
-                                <td>@user.Cpf</td>
-                                <td>@user.Email</td>
-                                <td>@user.Status</td>
-                                <td>@user.BirthDate</td>
-                                <td>@user.PhoneNumber</td>
-                                <td>@user.InclusionDate</td>
-                                <td>@user.ChangeDate</td>
-                                <td>
-                                    <input type="checkbox" name="userIds" value="@user.Id" />
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a asp-action="EditUser" asp-controller="User" asp-route-id="@user.Id" class="btn btn-success">Editar</a>
-                                    </div>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td>@user.Credential.Login</td>
+                                    <td>@user.Cpf</td>
+                                    <td>@user.Email</td>
+                                    <td>@user.Status</td>
+                                    <td>@user.BirthDate</td>
+                                    <td>@user.PhoneNumber</td>
+                                    <td>@user.InclusionDate</td>
+                                    <td>@user.ChangeDate</td>
+                                    <td>
+                                        <input type="checkbox" name="userIds" value="@user.Id" />
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a asp-action="EditUser" asp-controller="User" asp-route-id="@user.Id" data-user-id="@user.Id" class="btn btn-success edit-user-button">Editar</a>
+                                        </div>
+                                    </td>
+                                </tr>
                             }
                         </tbody>
                     </table>
@@ -65,31 +73,3 @@
     </div>
 </div>
 
-<script>
-    function deleteSelectedUsers() {
-        var selectedUserIds = [];
-        $('input[name="userIds"]:checked').each(function () {
-            selectedUserIds.push(parseInt($(this).val()));
-        });
-
-        if (selectedUserIds.length === 0) {
-            alert('Selecione pelo menos um usuário para excluir.');
-            return;
-        }
-
-        if (confirm('Tem certeza que deseja excluir os usuários selecionados?')) {
-            $.ajax({
-                type: 'POST',
-                url: '/User/deleteUsers',
-                data: JSON.stringify(selectedUserIds),
-                contentType: 'application/json',
-                success: function (data) {
-                    alert(data); 
-                },
-                error: function (error) {
-                    alert('Erro ao excluir os usuários: ' + error.responseText);
-                }
-            });
-        }
-    }
-</script>

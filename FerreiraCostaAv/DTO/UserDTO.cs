@@ -12,6 +12,18 @@ namespace FerreiraCostaAv.DTO
     {
     }
 
+    public UserDTO(int? id, CredentialDTO credential, string email, string phoneNumber, long cpf, DateTime birthDate, string mothersName, string status)
+    {
+      Id = id;
+      Credential = credential;
+      Email = email;
+      PhoneNumber = phoneNumber;
+      Cpf = cpf;
+      BirthDate = birthDate;
+      MothersName = mothersName;
+      Status = status;
+    }
+
     public int? Id { get; set; }
     public CredentialDTO Credential { get; set; }
     public string Email { get; set; }

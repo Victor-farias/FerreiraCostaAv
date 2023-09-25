@@ -49,15 +49,31 @@ namespace FerreiraCostaAv.Controllers
     }
 
     [HttpGet("recoverPassword")]
-    public IActionResult RecoverPassword(RecoverPasswordDTO recoverPasswordDTO)
+    public IActionResult RecoverPassword()
     {
       try
       {
-        return Ok(this.userService.RecoverPassword(recoverPasswordDTO));
+        return View();
       }
       catch (Exception e)
       {
-        return BadRequest(e.Message);
+        TempData["ErrorMessage"] = e.Message;
+        return RedirectToAction("Index", "Home");
+      }
+    }
+
+    public IActionResult SendPassword(RecoverPasswordDTO recoverPasswordDTO)
+    {
+      try
+      {
+        TempData["SuccessMessage"] = this.userService.RecoverPassword(recoverPasswordDTO);
+        
+        return RedirectToAction("Index", "Home");
+      }
+      catch (Exception e)
+      {
+        TempData["ErrorMessage"] = e.Message;
+        return RedirectToAction("recoverPassword");
       }
     }
 
@@ -104,12 +120,13 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
-    [HttpPost("EditUser")]
-    public IActionResult Edituser(UserDTO userDTO)
+    [HttpGet("EditUser")]
+    public IActionResult Edituser(int id)
     {
       try
       {
-        return View();
+        var user = this.userService.GetUserById(id);
+        return View("EditUser", user);
       }
       catch (Exception e)
       {
@@ -118,12 +135,27 @@ namespace FerreiraCostaAv.Controllers
       }
     }
 
+    [HttpPost("UpdateUser")]
+    public IActionResult UpdateUser(UserDTO userDTO)
+    {
+      try
+      {
+        this.userService.UpdateUser(userDTO);
+        return RedirectToAction("Users");
+      }
+      catch (Exception e)
+      {
+        TempData["ErrorMessage"] = e.Message;
+        return RedirectToAction("EditUser");
+      }
+    }
+
     [HttpPost("deleteUsers")]
     public IActionResult DeleteUsers([FromBody] List<int> ids)
     {
       try
       {
-        var deleteResult = this.userService.DeleteUsers(ids);
+        this.userService.DeleteUsers(ids);
         return RedirectToAction("Users");
       }
       catch (Exception e)
